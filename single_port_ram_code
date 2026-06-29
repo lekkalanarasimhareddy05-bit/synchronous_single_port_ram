@@ -1,0 +1,31 @@
+module single_port_ram(
+
+    input clk,
+    input reset,
+    input we,
+    input re,
+    input [3:0] addr,
+    input [7:0] data_in,
+    output reg [7:0] data_out
+);
+
+// Memory initialization
+reg [7:0] mem [0:15];
+
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+        data_out <= 8'd0;
+
+    else if (we == 1 && re == 0)
+        mem[addr] <= data_in;
+
+    else if (we == 0 && re == 1)
+        data_out <= mem[addr];
+
+    else
+        // No operation
+        data_out <= data_out;
+end
+
+endmodule
