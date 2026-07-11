@@ -1,0 +1,76 @@
+module single_port_ram_tb;
+
+reg clk;
+reg reset;
+reg we;
+reg re;
+reg [3:0] addr;
+reg [7:0] data_in;
+wire [7:0] data_out;
+
+single_port_ram uut(
+    .clk(clk),
+    .reset(reset),
+    .we(we),
+    .re(re),
+    .addr(addr),
+    .data_in(data_in),
+    .data_out(data_out)
+);
+
+// Clock Generation
+initial begin
+    clk = 0;
+    forever #5 clk = ~clk;
+end
+
+// Monitor
+initial begin
+    $monitor("time=%0t clk=%b reset=%b we=%b re=%b addr=%d data_in=%d data_out=%d",
+              $time, clk, reset, we, re, addr, data_in, data_out);
+end
+
+// Stimulus
+initial begin
+    reset = 1;
+    we = 0;
+    re = 0;
+    addr = 0;
+    data_in = 0;
+
+    #10;
+    reset = 0;
+
+    // Write 45 to address 2
+    #10;
+    we = 1;
+    re = 0;
+    addr = 4'd2;
+    data_in = 8'd45;
+
+    // Write 99 to address 5
+    #10;
+    we = 1;
+    re = 0;
+    addr = 4'd5;
+    data_in = 8'd99;
+
+    // Read address 2
+    #10;
+    we = 0;
+    re = 1;
+    addr = 4'd2;
+
+    #10;    // Wait one clock edge
+
+    // Read address 5
+    we = 0;
+    re = 1;
+    addr = 4'd5;
+
+    #10;    // Wait one clock edge
+
+    $finish;
+end
+
+endmodule
